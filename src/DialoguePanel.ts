@@ -1,4 +1,4 @@
-class NPCTalkPanel {
+class DialoguePanel {
 	panel: egret.DisplayObjectContainer;
 
 	stage: egret.DisplayObjectContainer;
@@ -8,34 +8,34 @@ class NPCTalkPanel {
 	private currentTaskId: string;
 	private currentTaskStatus: number;
 
-	private backColor = 0xFFFAFA;
+	private backColor =  0xE3CF57;
 	private backGround: egret.Shape;
-	private panelX = 100;
-	private panelY = 300;
-	private panelWidth = 200;
-	private panelHeight = 300;
+	private panelX = 50;
+	private panelY = 200;
+	private panelWidth = 300;
+	private panelHeight = 500;
 
 	private taskNameTextField: egret.TextField;
 	private taskNameTextFieldText = "";
-	private taskNameTextFieldX = 40;
+	private taskNameTextFieldX = this.panelWidth / 2 - 50;
 	private taskNameTextFieldY = 50;
 	private taskNameTextFieldWidth = 200;
 	private taskNameTextFieldColor = 0x000000;
 
 
-	private taskDescTextField: egret.TextField;
-	private taskDescTextFieldText = "";
-	private taskDescTextFieldX = 10;
-	private taskDescTextFieldY = 100;
-	private taskDescTextFieldWidth = 180;
-	private taskDescTextFieldColor = 0xFF0000;
+	private taskInformationField: egret.TextField;
+	private taskInformationTextFieldText = "";
+	private taskInformationTextFieldX = 10;
+	private taskInformationTextFieldY =100;
+	private taskInformationTextFieldWidth = 220;
+	private taskInformationTextFieldColor = 0x000000;
 
 	private button: egret.DisplayObjectContainer;
 	private buttonBack: egret.Shape;
-	private buttonColor = 0x808000;
-	private buttonX = 30;
-	private buttonY = 200;
-	private buttonWidth = 130;
+	private buttonColor = 0x802A2A;
+	private buttonX =  this.panelWidth / 2 -70;
+	private buttonY = this.panelHeight-100;
+	private buttonWidth = 160;
 	private buttonHeight = 70;
 
 
@@ -52,7 +52,7 @@ class NPCTalkPanel {
 		this.taskService = taskService;
 		this.panel = new egret.DisplayObjectContainer();
 		this.taskNameTextField = new egret.TextField();
-		this.taskDescTextField = new egret.TextField();
+		this.taskInformationField = new egret.TextField();
 		this.backGround = new egret.Shape();
 		this.button = new egret.DisplayObjectContainer();
 		this.buttonBack = new egret.Shape();
@@ -68,27 +68,25 @@ class NPCTalkPanel {
 		this.taskNameTextField.bold = true;
 		this.taskNameTextField.textColor = this.taskNameTextFieldColor;
 
-		this.taskDescTextField.text = this.taskDescTextFieldText;
-		this.taskDescTextField.x = this.taskDescTextFieldX;
-		this.taskDescTextField.y = this.taskDescTextFieldY;
-		this.taskDescTextField.width = this.taskDescTextFieldWidth;
-		this.taskDescTextField.bold = false;
-		this.taskDescTextField.textColor = this.taskDescTextFieldColor;
-
-
-	}
-
-	private drawBackGround() {
-		this.backGround.graphics.beginFill(this.backColor, 1);
-		this.backGround.graphics.drawRect(0, 0, this.panelWidth, this.panelHeight);
-		this.backGround.graphics.endFill();
+		this.taskInformationField.text = this.taskInformationTextFieldText;
+		this.taskInformationField.x = this.taskInformationTextFieldX;
+		this.taskInformationField.y = this.taskInformationTextFieldY;
+		this.taskInformationField.width = this.taskInformationTextFieldWidth;
+		this.taskInformationField.bold = false;
+		this.taskInformationField.textColor = this.taskInformationTextFieldColor;
+		this.taskInformationField.textAlign = egret.HorizontalAlign.CENTER;
 
 	}
-
 	private drawButtonBack() {
 		this.buttonBack.graphics.beginFill(this.buttonColor, 1);
 		this.buttonBack.graphics.drawRect(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
 		this.buttonBack.graphics.endFill();
+
+	}
+	private drawBackground() {
+		this.backGround.graphics.beginFill(this.backColor, 1);
+		this.backGround.graphics.drawRect(0, 0, this.panelWidth, this.panelHeight);
+		this.backGround.graphics.endFill();
 
 	}
 
@@ -101,6 +99,22 @@ class NPCTalkPanel {
 		this.buttonTextField.textColor = this.buttonTextFieldColor;
 
 	}
+	public drawPanel() {
+		this.panel.x = this.panelX;
+		this.panel.y = this.panelY;
+		this.panel.width = this.panelWidth;
+		this.panel.height = this.panelHeight;
+		this.drawButton();
+		this.drawBackground();
+		this.setText();
+		this.panel.addChild(this.backGround);
+		this.panel.addChild(this.taskNameTextField);
+		this.panel.addChild(this.taskInformationField);
+		this.panel.addChild(this.button);
+		this.button.touchEnabled = true;
+		this.button.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onButtonClick, this);
+
+	}
 
 	private drawButton() {
 		this.drawButtonBack();
@@ -109,22 +123,6 @@ class NPCTalkPanel {
 		this.button.addChild(this.buttonTextField);
 	}
 
-	public drawPanel() {
-		this.panel.x = this.panelX;
-		this.panel.y = this.panelY;
-		this.panel.width = this.panelWidth;
-		this.panel.height = this.panelHeight;
-		this.drawButton();
-		this.drawBackGround();
-		this.setText();
-		this.panel.addChild(this.backGround);
-		this.panel.addChild(this.taskNameTextField);
-		this.panel.addChild(this.taskDescTextField);
-		this.panel.addChild(this.button);
-		this.button.touchEnabled = true;
-		this.button.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onButtonClick, this);
-
-	}
 
 	private onButtonClick(e: egret.TouchEvent) {
 		switch (this.currentTaskStatus) {
@@ -145,31 +143,29 @@ class NPCTalkPanel {
 
 		this.stage.removeChild(this.panel);
 
-	} //按钮被点击
+	} 
 
 
 	public showPanel() {
 		this.stage.addChild(this.panel);
-
 	}
 
 	public removePanel() {
 		this.stage.removeChild(this.panel);
-
 	}
 
-	public onOpen(task: Task) {
+	public dialogueOpen(task: Task) {
 		this.currentTaskId = task.id;
 		this.changeTaskText(task.name, task.desc);
 		this.changeButton(task.status);
 		this.currentTaskStatus = task.status;
 		this.showPanel();
 
-	} //被通知
+	} 
 
 	private changeTaskText(name: string, desc: string) {
 		this.taskNameTextField.text = name;
-		this.taskDescTextField.text = desc;
+		this.taskInformationField.text = desc;
 
 	}
 
@@ -185,7 +181,6 @@ class NPCTalkPanel {
 
 			default:
 				this.buttonTextField.text = "";
-				break;
 
 		}
 

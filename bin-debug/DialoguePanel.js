@@ -1,24 +1,24 @@
-var NPCTalkPanel = (function () {
-    function NPCTalkPanel(stage, taskService) {
-        this.backColor = 0xFFFAFA;
-        this.panelX = 100;
-        this.panelY = 300;
-        this.panelWidth = 200;
-        this.panelHeight = 300;
+var DialoguePanel = (function () {
+    function DialoguePanel(stage, taskService) {
+        this.backColor = 0xE3CF57;
+        this.panelX = 50;
+        this.panelY = 200;
+        this.panelWidth = 300;
+        this.panelHeight = 500;
         this.taskNameTextFieldText = "";
-        this.taskNameTextFieldX = 40;
+        this.taskNameTextFieldX = this.panelWidth / 2 - 50;
         this.taskNameTextFieldY = 50;
         this.taskNameTextFieldWidth = 200;
         this.taskNameTextFieldColor = 0x000000;
-        this.taskDescTextFieldText = "";
-        this.taskDescTextFieldX = 10;
-        this.taskDescTextFieldY = 100;
-        this.taskDescTextFieldWidth = 180;
-        this.taskDescTextFieldColor = 0xFF0000;
-        this.buttonColor = 0x808000;
-        this.buttonX = 30;
-        this.buttonY = 200;
-        this.buttonWidth = 130;
+        this.taskInformationTextFieldText = "";
+        this.taskInformationTextFieldX = 10;
+        this.taskInformationTextFieldY = 100;
+        this.taskInformationTextFieldWidth = 220;
+        this.taskInformationTextFieldColor = 0x000000;
+        this.buttonColor = 0x802A2A;
+        this.buttonX = this.panelWidth / 2 - 70;
+        this.buttonY = this.panelHeight - 100;
+        this.buttonWidth = 160;
         this.buttonHeight = 70;
         this.buttonTextFieldText = "确认";
         this.buttonTextFieldX = this.buttonX + 15;
@@ -29,14 +29,14 @@ var NPCTalkPanel = (function () {
         this.taskService = taskService;
         this.panel = new egret.DisplayObjectContainer();
         this.taskNameTextField = new egret.TextField();
-        this.taskDescTextField = new egret.TextField();
+        this.taskInformationField = new egret.TextField();
         this.backGround = new egret.Shape();
         this.button = new egret.DisplayObjectContainer();
         this.buttonBack = new egret.Shape();
         this.buttonTextField = new egret.TextField();
         this.drawPanel();
     }
-    var d = __define,c=NPCTalkPanel,p=c.prototype;
+    var d = __define,c=DialoguePanel,p=c.prototype;
     p.setText = function () {
         this.taskNameTextField.text = this.taskNameTextFieldText;
         this.taskNameTextField.x = this.taskNameTextFieldX;
@@ -44,22 +44,23 @@ var NPCTalkPanel = (function () {
         this.taskNameTextField.width = this.taskNameTextFieldWidth;
         this.taskNameTextField.bold = true;
         this.taskNameTextField.textColor = this.taskNameTextFieldColor;
-        this.taskDescTextField.text = this.taskDescTextFieldText;
-        this.taskDescTextField.x = this.taskDescTextFieldX;
-        this.taskDescTextField.y = this.taskDescTextFieldY;
-        this.taskDescTextField.width = this.taskDescTextFieldWidth;
-        this.taskDescTextField.bold = false;
-        this.taskDescTextField.textColor = this.taskDescTextFieldColor;
-    };
-    p.drawBackGround = function () {
-        this.backGround.graphics.beginFill(this.backColor, 1);
-        this.backGround.graphics.drawRect(0, 0, this.panelWidth, this.panelHeight);
-        this.backGround.graphics.endFill();
+        this.taskInformationField.text = this.taskInformationTextFieldText;
+        this.taskInformationField.x = this.taskInformationTextFieldX;
+        this.taskInformationField.y = this.taskInformationTextFieldY;
+        this.taskInformationField.width = this.taskInformationTextFieldWidth;
+        this.taskInformationField.bold = false;
+        this.taskInformationField.textColor = this.taskInformationTextFieldColor;
+        this.taskInformationField.textAlign = egret.HorizontalAlign.CENTER;
     };
     p.drawButtonBack = function () {
         this.buttonBack.graphics.beginFill(this.buttonColor, 1);
         this.buttonBack.graphics.drawRect(this.buttonX, this.buttonY, this.buttonWidth, this.buttonHeight);
         this.buttonBack.graphics.endFill();
+    };
+    p.drawBackground = function () {
+        this.backGround.graphics.beginFill(this.backColor, 1);
+        this.backGround.graphics.drawRect(0, 0, this.panelWidth, this.panelHeight);
+        this.backGround.graphics.endFill();
     };
     p.setButtonText = function () {
         this.buttonTextField.text = this.buttonTextFieldText;
@@ -69,26 +70,26 @@ var NPCTalkPanel = (function () {
         this.buttonTextField.bold = false;
         this.buttonTextField.textColor = this.buttonTextFieldColor;
     };
-    p.drawButton = function () {
-        this.drawButtonBack();
-        this.setButtonText();
-        this.button.addChild(this.buttonBack);
-        this.button.addChild(this.buttonTextField);
-    };
     p.drawPanel = function () {
         this.panel.x = this.panelX;
         this.panel.y = this.panelY;
         this.panel.width = this.panelWidth;
         this.panel.height = this.panelHeight;
         this.drawButton();
-        this.drawBackGround();
+        this.drawBackground();
         this.setText();
         this.panel.addChild(this.backGround);
         this.panel.addChild(this.taskNameTextField);
-        this.panel.addChild(this.taskDescTextField);
+        this.panel.addChild(this.taskInformationField);
         this.panel.addChild(this.button);
         this.button.touchEnabled = true;
         this.button.addEventListener(egret.TouchEvent.TOUCH_TAP, this.onButtonClick, this);
+    };
+    p.drawButton = function () {
+        this.drawButtonBack();
+        this.setButtonText();
+        this.button.addChild(this.buttonBack);
+        this.button.addChild(this.buttonTextField);
     };
     p.onButtonClick = function (e) {
         switch (this.currentTaskStatus) {
@@ -103,23 +104,23 @@ var NPCTalkPanel = (function () {
             default:
         }
         this.stage.removeChild(this.panel);
-    }; //按钮被点击
+    };
     p.showPanel = function () {
         this.stage.addChild(this.panel);
     };
     p.removePanel = function () {
         this.stage.removeChild(this.panel);
     };
-    p.onOpen = function (task) {
+    p.dialogueOpen = function (task) {
         this.currentTaskId = task.id;
         this.changeTaskText(task.name, task.desc);
         this.changeButton(task.status);
         this.currentTaskStatus = task.status;
         this.showPanel();
-    }; //被通知
+    };
     p.changeTaskText = function (name, desc) {
         this.taskNameTextField.text = name;
-        this.taskDescTextField.text = desc;
+        this.taskInformationField.text = desc;
     };
     p.changeButton = function (taskStatus) {
         switch (taskStatus) {
@@ -131,10 +132,9 @@ var NPCTalkPanel = (function () {
                 break;
             default:
                 this.buttonTextField.text = "";
-                break;
         }
     };
-    return NPCTalkPanel;
+    return DialoguePanel;
 }());
-egret.registerClass(NPCTalkPanel,'NPCTalkPanel');
-//# sourceMappingURL=NPCTalkPanel.js.map
+egret.registerClass(DialoguePanel,'DialoguePanel');
+//# sourceMappingURL=DialoguePanel.js.map

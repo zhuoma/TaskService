@@ -116,31 +116,16 @@ class Main extends egret.DisplayObjectContainer {
      * 创建游戏场景
      * Create a game scene
      */
-    
     private createGameScene(): void {
-         var sky:egret.Bitmap = this.createBitmapByName("bg_jpg");
-        this.addChild(sky);
-        var stageW:number = this.stage.stageWidth;
-        var stageH:number = this.stage.stageHeight;
-        sky.width = stageW;
-        sky.height = stageH;
-    }
-       private createBitmapByName(name:string):egret.Bitmap {
-        var result = new egret.Bitmap();
-        var texture:egret.Texture = RES.getRes(name);
-        result.texture = texture;
-        return result;
-    
-
-
-       
         this.touchEnabled = true;
+
         var taskService = new TaskService();
 
         var taskPanel = new TaskPanel(this, taskService);
-        var npctalkpanel=new NPCTalkPanel(this,taskService);
+        var dialoguepanel=new DialoguePanel(this,taskService);
+        var mockkillmonsterbutton=new MockKillMonsterButton(this,taskService);
 
-        var npc_0 = new NPC("npc_0", "NPC_1", taskService,npctalkpanel);
+        var npc_0 = new NPC("npc_0", "NPC_1", taskService,dialoguepanel, mockkillmonsterbutton);
         npc_0.setNpc(0, 100, 0x800080);
         npc_0.drawNpc();
         this.addChild(npc_0.npcStage);
@@ -148,7 +133,7 @@ class Main extends egret.DisplayObjectContainer {
         npc_0.getTask();
 
 
-        var npc_1 = new NPC("npc_1", "NPC_2", taskService,npctalkpanel);
+        var npc_1 = new NPC("npc_1", "NPC_2", taskService,dialoguepanel, mockkillmonsterbutton);
         npc_1.setNpc(200, 100, 0x0000FF);
         npc_1.drawNpc();
         this.addChild(npc_1.npcStage);
